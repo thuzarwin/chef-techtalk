@@ -1,0 +1,4 @@
+#vim: set ft=ruby :
+source 'https://supermarket.chef.io'
+
+cookbook 'postgresql', '~> 4.0.0'

@@ -1,0 +1,6 @@
+/nodes/*
+!/nodes/.gitkeep
+/databags/*
+!/databags/.gitkeep
+
+/.vagrant

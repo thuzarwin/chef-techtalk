@@ -1,0 +1,29 @@
+# vim: set ft=ruby :#
+
+Vagrant.configure(2) do |config|
+    config.vm.box = 'bento/centos-7.2'
+
+    config.vm.network 'forwarded_port', guest: 5432, host: 5432
+
+    config.vm.provision 'chef_solo' do |chef|
+        chef.cookbooks_path = 'cookbooks/'
+        chef.add_recipe 'postgresql::server_redhat'
+
+        chef.json = {
+            'postgresql' => {
+                'password' => {
+                    'postgres' => 'vagrant'
+                },
+                'dir' => '/var/lib/pgsql/data',
+                'config' => {
+                    'listen_addresses' => '0.0.0.0',
+                    'data_directory' => '/var/lib/pgsql/data'
+                },
+                'pg_hba' => [
+                    {type: 'host', db: 'all', user: 'postgres', addr: '0.0.0.0/0', method: 'trust'},
+                    {type: 'local', db: 'all', user: 'vagrant', addr: nil, method: 'trust'}
+                ]
+            }
+        }
+    end
+end

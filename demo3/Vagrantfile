@@ -1,0 +1,71 @@
+# vi: set ft=ruby :#
+CHEF_USER="admin"
+CHEF_PASSWORD="vagrant"
+CHEF_ORGANIZATION="test"
+
+VAGRANT_ROOT = File.join(File.dirname(File.expand_path(__FILE__)), '.vagrant')
+
+raise 'Vagrant plugin "vagrant-hostmanager" is required!' unless Vagrant.has_plugin? 'vagrant-hostmanager'
+
+Vagrant.configure(2) do |config|
+    config.vm.box = 'bento/centos-7.2'
+
+    config.hostmanager.enabled = true
+    config.hostmanager.manage_host = true
+    config.hostmanager.ip_resolver = proc do |vm, resolving_vm|
+        return if vm.id.nil?
+
+        begin
+            buffer = '';
+            vm.communicate.execute("/sbin/ifconfig | grep -Po 'inet\s+.+?\s+' | grep -v '127.0.0.1'") do |type, data|
+                buffer += data if type == :stdout
+            end
+
+            buffer.scan(/(\d+\.\d+\.\d+\.\d+)/).to_a[1][0]
+        rescue StandardError
+            nil
+        end
+    end
+
+    config.vm.define "server" do |node|
+        node.vm.hostname = "server.cheftest.box"
+        node.vm.network 'private_network', type: 'dhcp'
+        # node.vm.network 'public_network'
+
+        config.vm.provider 'virtualbox' do |v|
+            v.memory = 2048
+        end
+
+        node.vm.provision "shell", path: 'build/chef-server.sh', args: [CHEF_USER, CHEF_PASSWORD, CHEF_ORGANIZATION]
+    end
+
+    config.vm.define "node1" do |node|
+        node.vm.hostname = "node1.cheftest.box"
+        node.vm.network 'private_network', type: 'dhcp'
+
+        node.vm.provision "chef_client" do |chef|
+            chef.chef_server_url = "https://server.cheftest.box/organizations/#{CHEF_ORGANIZATION}"
+            chef.validation_client_name = "#{CHEF_ORGANIZATION}-validator"
+            chef.validation_key_path = "keys/#{CHEF_ORGANIZATION}-validator.pem"
+
+            chef.delete_node = true
+            chef.delete_client = true
+
+            chef.add_recipe 'postgresql::server_redhat'
+
+            chef.json = {
+                'postgresql' => {
+                    'dir' => '/var/lib/pgsql/data',
+                    'config' => {
+                        'listen_addresses' => '0.0.0.0',
+                        'data_directory' => '/var/lib/pgsql/data'
+                    },
+                    'pg_hba' => [
+                        {type: 'host', db: 'all', user: 'postgres', addr: '0.0.0.0/0', method: 'trust'},
+                        {type: 'local', db: 'all', user: 'vagrant', addr: nil, method: 'trust'}
+                    ]
+                }
+            }
+        end
+    end
+end

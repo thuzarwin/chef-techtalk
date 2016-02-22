@@ -1,0 +1,4 @@
+/*.rpm
+/keys
+/.vagrant
+/.chef/knife.rb

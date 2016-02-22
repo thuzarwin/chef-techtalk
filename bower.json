@@ -1,0 +1,19 @@
+{
+  "name": "intro-to-chef",
+  "homepage": "https://github.com/zdata-inc/InternOnboarding",
+  "authors": [
+    "ben <ben@ros.io>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

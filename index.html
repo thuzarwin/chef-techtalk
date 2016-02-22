@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+        <link rel="stylesheet" media="all" href="bower_components/reveal.js/css/reveal.css" />
+        <link rel="stylesheet" media="all" href="bower_components/reveal.js/css/theme/black.css" />
+
+        <!-- Code syntax highlighting -->
+        <link rel="stylesheet" href="bower_components/reveal.js/lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement('link');
+           link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match(/print-pdf/gi) ? 'bower_components/reveal.js/css/print/pdf.css' : 'bower_components/reveal.js/css/print/paper.css';
+            document.getElementsByTagName('head')[0].appendChild(link);
+        </script>
+
+        <!--[if lt IE 9]>
+        <script src="bower_components/reveal.js/lib/js/html5shiv.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <section id="what-is-it">
+                        What is a configuration management tool?
+
+                        <ul>
+                            <li class="fragment">Establishes consistency</li>
+                            <li class="fragment">Represents infrastructure as code (IaC)</li>
+                            <li class="fragment">Provides a history of your infrastructure</li>
+                            <li class="fragment">Allows management of any number of servers</li>
+                        </ul>
+
+                        <aside class="notes" data-markdown>
+                            - Establishes and maintains a consistent state in your infrastructure.
+                            - All your infrastructure is managed with code.
+                              - Also called infrastructure as code.
+                            - Because it's code, you can put it in a VCS (version control system), like git.
+                              - Every change made is saved, along with the reason the change was made.
+                              - Makes it easy to revert your infrastructure if something goes wrong.
+                            - Allows easy management of tens, hundreds, or thousands of servers.
+                              - Is really the only way to manage thousands of servers.
+                        </aside>
+                    </section>
+
+                    <section>
+                        How do you make a change in your infrastructure with a configuration management tool?
+
+                        <ul>
+                            <li class="fragment">Modify code</li>
+                            <li class="fragment">Save the changes</li>
+                            <li class="fragment">Chef reads these changes</li>
+                            <li class="fragment">Chef brings all servers up-to-date</li>
+                        </ul>
+
+                        <aside class="notes" data-markdown>
+                            Want to change how your database is configured?
+
+                            1. You make the change in a code/config file.
+                            2. You save the changes in your VCS (Version Control System), like git.
+                            3. These changes are picked up by your configuration management tool.
+                            4. The configuration management tool runs, and completely brings all the servers it manages up-to-date.
+                        </aside>
+                    </section>
+                </section>
+
+                <section>
+                    Why should I care?
+
+                    <ul>
+                        <li class="fragment">Provides consistency, stability and control.</li>
+                        <li class="fragment">Provides greater agility and faster problem resolution.</li>
+                        <li class="fragment">Provides easy means to configure development environments.</li>
+                        <li class="fragment">Provides a history of your infrastructure.</li>
+                    </ul>
+
+                    <aside class="notes" data-markdown>
+                        - Provides consistency, stability and control.
+                          - With a provisioning manager you aren't concerned with servers, but types of servers.
+                          - Fixes made for one machine will propagate to all affected machines automatically.
+                        - Provides greater agility and faster problem solving
+                          - Easier to see the history of changes made, and in what state every server is in.
+                          - Spend less time finding the issue, and more time finding the best solution to it.
+                        - Provides easy means to configure development environments.
+                          - Because your entire environment is codified, creating copies of it is easy.
+                          - This also means bringing up an environment in a different region for failover is simple, fast, and accurate.
+                        - Provides a history of your infrastructure.
+                          - With every change recorded in your VCS of choice, tracking and reverting changes is simple.
+                          - Also provides insight into why things were done a certain way.
+                    </aside>
+                </section>
+
+                <section>
+                    Why Chef?
+
+                    <ul>
+                        <li class="fragment">Written in Ruby</li>
+                        <li class="fragment">Open Source - Apache 2.0</li>
+                        <li class="fragment">Backed by Opscode, great community</li>
+                        <li class="fragment">Great community, over 400 contributers and 13,000 commits</li>
+                    </ul>
+
+                    <aside class="notes" data-markdown>
+                        Why learn Chef?  What makes it different?
+                         - Chef is written in Ruby, not a shackled subset of Ruby or yet another configuration language
+                           - Chef provides a DSL (Domain Specific Language) on top of ruby
+                           - so you get all the power of a programming language, while still being succinct.
+                           - Different from other available configuration management tools like Puppet and Ansible.
+                         - Open Source - Allowed to copy, modify, and redistribute; with a few restrictions.
+                         - Opscode is constantly working on and improving Chef.
+                           - Working on Chef sense 2009.
+                         - Community is great too
+                           - You can always get in touch with a developer for the project on IRC.
+                    </aside>
+                </section>
+
+                <section>
+                    <h1>Intro to Chef</h1>
+                </section>
+
+                <section>
+                    <div>What is ChefDK?</div>
+                    <a href="https://downloads.chef.io/chef-dk/">https://downloads.chef.io/chef-dk/</a>
+
+                    <div class=fragment>Provides tools to work with Chef</div>
+
+                    <ul>
+                        <li class=fragment>chef</li>
+                        <li class=fragment>knife</li>
+                        <li class=fragment>Berkshelf, Foodcritic, Chef Client, etc.</li>
+                    </ul>
+
+                    <aside class="notes" data-markdown>
+                        ChefDK (Chef Development Kit).
+
+                        Provides
+                         - chef - Streamlines working with Chef code.
+                         - knife - Tool to communicate with Chef Server.
+                         - Other tools are available to test, run, and manage Chef code.
+                           - We'll go through a few of them too.
+                    </aside>
+                </section>
+
+                <section>
+                    <section>
+                        <div>Major components in Chef</div>
+
+                        <ul>
+                            <li class=fragment>Workstation</li>
+                            <li class=fragment>Chef Server</li>
+                            <li class=fragment>Chef Client</li>
+                            <li class=fragment>node</li>
+                            <li class=fragment>Cookbook</li>
+                        </ul>
+
+                        <aside class="notes" data-markdown>
+                            - Workstation - Computers configured to allow users to author, test, and maintain cookbooks.
+                              - Cookbooks are uploaded from workstations to the Chef Server
+                            - Chef Server - The hub of information for your infrastructure.
+                              - The Chef Client connects to the Chef Server from the nodes on which it's installed to fetch configuration data.
+                            - Chef Client - Is installed on every node being managed by Chef.
+                              - Performs all actions required to bring server up-to-date.
+                            - node - Any machine, physical, virtual, cloud-based, etc. that is managed by Chef.
+                            - Cookbook - The fundamental unit of configuration and policy distribution.
+                              - Defines a scenario, and contains everything required to support that scenario.
+                        </aside>
+                    </section>
+
+                    <section>
+                        <div style="padding:12px;background-color:white;border-radius:5px; display:inline-block;">
+                            <img src="images/chef_infrastructure.png" alt="Chef Infrastructure Diagram" />
+                        </div>
+
+                        <aside class="notes" data-markdown>
+                            1. Workstation - Your computer, has cookbooks synced down from a remote git repository.
+                            2. Chef Server - These cookbooks and their configs are uploaded to the Chef Server.
+                            3. Chef Client - Chef clients contact Chef server for this information, so they can provision themselves.
+                            4. Workstation - Chef Knife can SSH into nodes to bootstrap them.
+                        </aside>
+                    </section>
+
+                    <section>
+                        Example Chef Cookbook directory layout:
+                        <pre><code class="bash">
+postgresql/
+├── Policyfile.rb
+├── README.md
+├── chefignore
+├── metadata.rb
+├── recipes
+│   └── default.rb
+├── spec
+│   ├── spec_helper.rb
+│   └── unit
+│       └── recipes
+│           └── default_spec.rb
+└── test
+    └── integration
+        ├── default
+        │   └── serverspec
+        │       └── default_spec.rb
+        └── helpers
+            └── serverspec
+                └── spec_helper.rb
+                        </code></pre>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <div>What are Recipes?</div>
+
+                        <ul>
+                            <li>Ruby code</li>
+                            <li>Collection of resources, with an action, name, and attribute-value pairs.</li>
+                            <li>May have arbitrary Ruby code</li>
+                            <li>Must be stored in a cookbook</li>
+                            <li>May be included in other recipes</li>
+                            <li>May query Chef server for information</li>
+                        </ul>
+
+                        <aside class="notes" data-markdown>
+                            - Are authored using Ruby, a programming language designed to be easily readable and behave in a predictable manner.
+                            - Mostly a collection of resources, resource is a block of ruby with an action, name, and a number of attribute-value pairs.
+                            - Also may have helper Ruby code, when necessary.
+                            - Must be stored in a cookbook.
+                            - May be included in other recipes (or include other recipes).
+                            - May query Chef server for information.
+                        </aside>
+                    </section>
+
+                    <section>
+                        <div>Example recipe</div>
+
+                        <pre><code class="ruby">
+user "postgres" do
+    action :create
+end
+
+package "postgresql-server" do
+    action :install
+end
+
+service "postgresql" do
+    action [:start, :enable]
+end
+                        </code></pre>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <div>What is a resource?</div>
+
+                        <ul>
+                            <li>Describes state</li>
+                            <li>Details steps needed to bring node to desired state</li>
+                            <li>Grouped into recipes</li>
+                        </ul>
+
+                        <aside class=notes data-markdown>
+                            A resource is a statement of configuration policy that
+                             - Describes the desired state for a configuration item
+                             - Declares the steps needed to bring that item to the desired state
+                             - Are grouped into recipes, which describe working configurations
+                        </aside>
+                    </section>
+
+                    <section>
+                        <div>Some useful resources</div>
+                        <ul>
+                            <li>directory</li>
+                            <li>user</li>
+                            <li>template</li>
+                            <li>package</li>
+                            <li>execute</li>
+                        </ul>
+
+                        <aside class=notes data-markdown>
+                            - directory - Manages a directory.
+                            - user - Manages a user account.
+                            - template - Manage a file, use a template to generate content.
+                            - package - Install a package using the correct package manager.
+                            - execute - Run an arbitrary shell command.
+                        </aside>
+                    </section>
+
+                    <section>
+                        <div>Some examples</div>
+
+                        <pre><code class="ruby">
+%W(git-core postgresql vim).each do |pkg|
+    package pkg
+end
+
+user "ben" do
+    action :create
+end
+
+directory "/home/ben/server/configs" do
+    recursive true
+    owner "ben"
+    group "ben"
+    action :create
+end
+
+template "/home/ben/server/configs/main.yaml" do
+    source "main.yml.erb"
+    variables({
+        somevariable: "Some Value"
+    })
+end
+
+execute "Copy files" do
+    command "cp -R /etc/skel.d/.* /home/ben/server/"
+    not_if "test -e /home/ben/server/.bashrc"
+end
+                        </code></pre>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <div>What are attributes?</div>
+
+                        <ul>
+                            <li>Allows you to configure cookbooks</li>
+                            <li>Very powerful inheritance scheme.</li>
+                            <li>Attributes are referenced in cookbooks.</li>
+                            <li>Attributes are saved on the Chef Server between Chef Client runs.</li>
+                        </ul>
+
+                        <aside class=notes data-markdown>
+                            - Chef attributes are the variables in Chef.
+                            - Every attribute is modifiable, and represents some configurable value in the cookbook.
+                            - Represented as a multidimensional array, similar to JSON.
+                            - Attributes are saved in-between Chef Client runs, providing a sort of persistence.
+                        </aside>
+                    </section>
+
+                    <section>
+                        <div>Attribute precedence</div>
+                        <img src="images/overview_chef_attributes_table.png" alt="Chef Attribute Precedence Table" />
+
+                        <aside class=notes data-markdown>
+                            - A lot of places attributes can be set.
+                            - Don't need to memorize, be aware of this though, could byte you!
+                        </aside>
+                    </section>
+
+                    <section>
+                        <div>Some examples</div>
+
+                        <pre><code class="ruby">
+node.default[:zdata_postgres][:user] = "ben"
+node.default[:zdata_postgres][:config_file] = "/home/ben/server/configs/main.yml"
+                        </code></pre>
+
+                        <pre><code class="ruby">
+%W(git-core postgresql vim).each do |pkg|
+    package pkg
+end
+
+user node[:zdata_postgres][:user] do
+    action :create
+end
+
+unless node[:zdata_postgres][:config_file].nil?
+    directory File.dirname(node[:zdata_postgres][:config_file]) do
+        recursive true
+        owner node[:zdata_postgres][:user]
+        group node[:zdata_postgres][:user]
+        action :create
+    end
+
+    template node[:zdata_postgres][:config_file] do
+        source "main.yml.erb"
+        variables({
+            user: node[:zdata_postgres][:user]
+        })
+    end
+end
+
+execute "Copy files" do
+    command "cp -R /etc/skel.d/.* #{File.join '/home', node[:zdata_postgres][:user], 'server'}"
+    not_if "test -e #{File.join '/home', node[:zdata_postgres][:user], 'server/.bashrc'}"
+end
+                        </code></pre>
+                    </section>
+                </section>
+
+                <section>
+                    <div>The run-list</div>
+
+                    <div>Specifies which recipes should be run on a node or group of nodes, as well as what order they should be run in.</div>
+
+                    <br/>
+                    <div>Example</div>
+                    <pre><code class="ruby">
+"postgresql::server, redis::server"
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h1>Chef Supermarket</h1>
+                    <a href="https://supermarket.chef.io">https://supermarket.chef.io</a>
+
+                    <aside class=notes data-markdown>
+                        - Where to find Chef Community Cookbooks
+                          - Great to base your Cookbooks on ones already available.
+                        - Each cookbook has its own set of recipes, attributes, etc.  This information is available from the Chef Supermarket
+                    </aside>
+                </section>
+
+                <section>
+                    <section id="demo1">
+                        <h2>Demo 1 - Chef Solo</h2>
+                        <div>Getting your feet wet with Chef Solo</div>
+
+                        <ul>
+                            <li>Chef without the Chef Server</li>
+                            <li>Great for development</li>
+                        </ul>
+
+                        <aside class=notes data-markdown>
+                            - Chef Solo is a variant of Chef.
+                              - Lets you run Chef Client without a Chef Server.
+                              - Great for Vagrant, where spinning up a Chef Server would be overkill.
+                        </aside>
+                    </section>
+
+                    <section id="demo2">
+                        <h2>Demo 2 - Chef Zero</h2>
+                        <div>Real development environments with Chef Zero</div>
+
+                        <ul>
+                            <li>Chef an in-memory Chef Server (called Chef Zero)</li>
+                            <li>Great for development, much closer to a real Chef Server environment.</li>
+                        </ul>
+
+                        <aside class=notes data-markdown>
+                            - Chef Zero is Chef Solo's big brother.
+                              - Instead of running a Chef Client run without a Chef Server,
+                                run Chef Client with an in-memory Chef Server.
+                              - All the benefits of using Chef Server, much lighter, easier to use.
+                        </aside>
+                    </section>
+
+                    <section id="demo3">
+                        <h2>Demo 3 - Chef Server</h2>
+                        <div>Real Chef Server/Chef Client environment to play with.</div>
+
+                        <ul>
+                            <li>Creates a virtual machine with a Chef Server</li>
+                            <li>Great way to learn Knife, how to manage a Chef Server</li>
+                        </ul>
+
+                        <aside class=notes data-markdown>
+                            - Full fledged Chef Server.
+                              - Practice working with a Chef Server from you Workstation.
+                              - Upload cookbooks, databags, roles, provision another virtual machine.
+                            - Downsides to doing this in development.
+                              - Have to upload cookbook changes.
+                              - Hidden information (compared to Chef Zero where saved attributes are in nodes dir)
+                        </aside>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        Where to find help?
+
+                        <ul>
+                            <li><a href="https://learn.chef.io">learn.chef.io</a></li>
+                            <li><a href="https://docs.chef.io">docs.chef.io</a></li>
+                            <li><a href="irc://irc.freenode.net/chef">irc.freenode.net#chef</a></li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <div>Where Chef maybe isn't a good fit.</div>
+
+                        <ul>
+                            <li>Small deployments</li>
+                            <li>Static deployments</li>
+                            <li>Short-lived deployments</li>
+                        </ul>
+
+                        <aside class=notes data-markdown>
+                            - What do we get for all this added complexity?
+                            - Sometimes the cons outweigh the pros.
+                        </aside>
+                    </section>
+                </section>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="bower_components/reveal.js/lib/js/head.min.js"></script>
+		<script type="text/javascript" src="bower_components/reveal.js/js/reveal.js"></script>
+
+		<script type="text/javascript">
+			Reveal.initialize({
+				progress: true,
+				history: true,
+				center: true,
+				transition: 'slide',
+				dependencies: [
+					{ src: 'bower_components/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'bower_components/reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'bower_components/reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'bower_components/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'bower_components/reveal.js/plugin/zoom-js/zoom.js', async: true },
+					{ src: 'bower_components/reveal.js/plugin/notes/notes.js', async: true }
+				]
+			});
+		</script>
+    </body>
+</html>
