@@ -16,6 +16,7 @@ chef-server-ctl reconfigure
 sleep 3
 
 mkdir /vagrant/keys 2>/dev/null
+rm -f /vagrant/keys/*
 # create user
 chef-server-ctl user-create $USER $USER $USER $USER@${ORG}.box $PASSWORD --filename /vagrant/keys/${USER}.pem
 # create organization
@@ -35,10 +36,10 @@ chef-server-ctl reconfigure
 # chef-server-ctl reconfigure
 # opscode-reporting-ctl reconfigure
 
-# create config.rb for knife
-mkdir /vagrant/.chef
+# create knife.rb for knife
+mkdir /vagrant/.chef 2>/dev/null
 cat <<EOF > /vagrant/.chef/knife.rb
-current_dir = File.dirname(__FILE__)
+current_dir = File.join File.dirname(__FILE__), '..'
 
 node_name                '$USER'
 client_key               File.join current_dir, 'keys', '$USER.pem'
