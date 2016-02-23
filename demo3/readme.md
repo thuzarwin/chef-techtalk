@@ -37,7 +37,7 @@ Set "normal" to:
 }
 ```
 6. Bootstrap the new node `knife bootstrap vagrant@node1.cheftest.box -i .vagrant/machines/node1/virtualbox/private_key --sudo -N node1 -r postgresql::server_redhat --node-ssl-verify-mode none`
-7. Visit [https://server.cheftest.box][https://server.cheftest.box], explore the Chef Server management UI.
+7. Visit [https://server.cheftest.box](https://server.cheftest.box), explore the Chef Server management UI.
    User: `admin`, Pass: `vagrant`
 
 8. Connect to postgres with `psql -h node1.cheftest.box -U postgres`
