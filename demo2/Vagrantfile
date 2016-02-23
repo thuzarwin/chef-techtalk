@@ -11,7 +11,7 @@ Vagrant.configure(2) do |config|
 
     config.vm.provision 'chef_zero' do |chef|
         chef.nodes_path = 'nodes/'
-        chef.cookbooks_path = 'cookbooks/'
+        # chef.cookbooks_path = 'cookbooks/'
         # chef.data_bags_path = 'databags/'
 
         chef.add_recipe 'postgresql::server_redhat'
